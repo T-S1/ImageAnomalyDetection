@@ -9,19 +9,21 @@ from tensorflow.keras import layers
 
 from src.visualize_data import show_images, show_similarities, show_results
 
-image_paths = glob.glob("outsource/Hazelnut/train/good/*.jpg")  # フォルダ内のパス取得
-n_data = len(image_paths)   # データ数
+normal_paths = glob.glob("outsource/Hazelnut/train/good/*.jpg")     # フォルダ内のパス取得
+abnormal_paths = glob.glob("outsource/Hazelnut/train/crack/*.jpg")
+image_paths = normal_paths + abnormal_paths
+n_data = len(image_paths)
 
 # 画像リサイズの画素数設定
 h_resize = 64                                   # リサイズ後の高さ(ピクセル数)
-im = cv2.imread(image_paths[0])                 # データ読み込み
+im = cv2.imread(normal_paths[0])                # データ読み込み
 height = im.shape[0]                            # 元画像の高さ
 width = im.shape[1]                             # 元画像の幅
 w_resize = round(width * h_resize / height)     # リサイズ後の幅(ピクセル数)
 
 """正常データの読み込み&前処理"""
 ims_ref = np.zeros((n_data, h_resize, w_resize, 3))     # 異常検知のための参照画像
-for i in range(len(image_paths)):
+for i in range(n_data):
     im = cv2.imread(image_paths[i])                 # BGRの順で格納
     im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)        # RGBの順に変更
     im_res = cv2.resize(im, (w_resize, h_resize))   # 画素数の変更
@@ -37,7 +39,13 @@ x = layers.Conv2D(32, 3)(inputs)(x)
 x = layers.Activation("relu")(x)
 x = layers.Dense(32)(x)
 x = layers.Activation("relu")(x)
+x = layers.Dense(2)(x)
+outputs = layers.Activation("softmax")(x)
 
+model = keras.Model(inputs=inputs, outputs=outputs)
+print(model.summary())
+
+x_train = ims_ref
 
 # """異常検知のための閾値決定"""
 # sims = np.zeros(n_data)     # 正常データ間の距離を格納する配列
