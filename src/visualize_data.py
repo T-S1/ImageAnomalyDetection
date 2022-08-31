@@ -15,7 +15,7 @@ def show_images(images, nrows=3, ncols=4):
         row = i // ncols
         col = i % ncols
         axs[row, col].axis("off")
-        axs[row, col].imshow(images[i].astype(int))
+        axs[row, col].imshow(images[i])
     plt.tight_layout()
     plt.show()
 
@@ -35,7 +35,7 @@ def show_similarities(sims, threshold=None):
     plt.show()
 
 
-def show_results(images, results, nrows=4, ncols=5):
+def show_results(images, labels, nrows=4, ncols=5, names=["正常", "異常"]):
     """show images in a figure
     Args:
         images (numpy.ndarray [int]): shape is (num_data, height, width, channels)
@@ -46,7 +46,7 @@ def show_results(images, results, nrows=4, ncols=5):
     for i in range(n_plots):
         row = i // ncols
         col = i % ncols
-        axs[row, col].set_title(results[i])
+        axs[row, col].set_title(names[labels[i]])
         axs[row, col].axis("off")
         axs[row, col].imshow(images[i].astype(int))
     plt.tight_layout()

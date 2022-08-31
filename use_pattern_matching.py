@@ -91,9 +91,9 @@ for i in range(n_test):
     ims[i, :, :, :] = im_res
 
     if sim_max > th_sim:
-        results.append("normal")
+        results.append(0)
     else:
-        results.append("abnormal")
+        results.append(1)
 
     # print(f"{im_path}: {result}, {sim_max}")
 
