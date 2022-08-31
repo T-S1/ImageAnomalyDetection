@@ -5,10 +5,26 @@ import matplotlib.pyplot as plt
 plt.rcParams['font.family'] = "Meiryo"  # フォントの設定
 
 
+def show_image(image):
+    """show a image
+
+    Args:
+        image (numpy.ndarray): shape is (height, width, channels)
+    """
+    if np.amax(image) > 1:
+        im = image.astype(np.int32)
+    else:
+        im = image.astype(np.float64)
+    fig = plt.figure()
+    plt.imshow(im)
+    plt.axis("off")
+    plt.show()
+
+
 def show_images(images, nrows=3, ncols=4):
     """show images in a figure
     Args:
-        images (numpy.ndarray [int]): shape is (num_data, height, width, channels)
+        images (numpy.ndarray): shape is (num_data, height, width, channels)
     """
     if np.amax(images) > 1:
         ims = images.astype(np.int32)
@@ -56,10 +72,11 @@ def show_results(images, preds, gts=None, nrows=4, ncols=5, names=["正常", "�
         if gts is None:
             title = f"{names[preds[i]]}"
         if gts is not None:
-            title += f"予測: {names[preds[i]]}/ 正解: {names[gts[i]]}"
+            title = f"予測: {names[preds[i]]}/ 正解: {names[gts[i]]}"
         axs[row, col].set_title(title)
         axs[row, col].axis("off")
         axs[row, col].imshow(images[i])
+    plt.suptitle("予測結果")
     plt.tight_layout()
     plt.show()
 
@@ -83,4 +100,3 @@ def show_history(history):
 
     plt.tight_layout()
     plt.show()
-

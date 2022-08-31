@@ -9,7 +9,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from sklearn.model_selection import train_test_split
 
-from src.visualize_data import show_images, show_history
+from src.visualize_data import show_images, show_history, show_results
 
 SEED = 22
 tf.random.set_seed(SEED)
@@ -65,7 +65,7 @@ w_resize = round(width * h_resize / height)     # リサイズ後の幅(ピク�
 images = np.zeros((n_data, h_resize, w_resize, 3), dtype=np.float32)
 for i in range(n_data):
     image = cv2.imread(image_paths[i])
-    image = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)         # RGBの順に変更
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)         # RGBの順に変更
     image = cv2.resize(image, (w_resize, h_resize))     # 画素数の変更
     images[i, :, :, :] = image / 255                    # 0-1にスケーリング
 
@@ -81,33 +81,34 @@ x = layers.Activation("relu")(x)
 x = layers.Flatten()(x)
 x = layers.Dense(32)(x)
 x = layers.Activation("relu")(x)
-x = layers.Dense(1)(x)
-outputs = layers.Activation("sigmoid")(x)
+x = layers.Dense(2)(x)
+outputs = layers.Activation("softmax")(x)
 
 model = keras.Model(inputs=inputs, outputs=outputs)
 print(model.summary())
 
 model.compile(
-    loss=tf.keras.losses.BinaryCrossentropy(),
+    loss=tf.keras.losses.CategoricalCrossentropy(),
     optimizer=keras.optimizers.Adam(learning_rate=1e-3),
     metrics=["accuracy"],
 )
 
+y = tf.one_hot(labels, 2).numpy()
 x_train, x_val, y_train, y_val = train_test_split(
-    images, labels, test_size=0.2, random_state=SEED, stratify=labels
+    images, y, test_size=0.2, random_state=SEED, stratify=labels
 )
-
-# history = model.fit(
-#     train_ims, train_labels, batch_size=1, epochs=10, validation_data=(test_ims, test_labels)
-# )
 
 history = model.fit(
     x_train, y_train, batch_size=1, epochs=2, validation_data=(x_val, y_val)
 )
+show_history(history)
 
 _, val_acc = model.evaluate(x_val, y_val)
 print(f"バリデーション時の正解数: {round(len(x_val) * val_acc)} / {len(x_val)}")
 
-show_history(history)
+preds = model.predict(x_val)
+pred_labels = np.argmax(preds, axis=1).astype(np.int32)
+
+show_results(x_val, pred_labels)
 
 model.save("deep_learning_model.h5")
