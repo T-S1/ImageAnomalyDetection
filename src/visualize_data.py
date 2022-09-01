@@ -1,3 +1,4 @@
+import pdb
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -14,7 +15,7 @@ def show_image(image):
     if np.amax(image) > 1:
         im = image.astype(np.int32)
     else:
-        im = image.astype(np.float64)
+        im = image
     fig = plt.figure()
     plt.imshow(im)
     plt.axis("off")
@@ -62,20 +63,25 @@ def show_results(images, preds, gts=None, nrows=4, ncols=5, names=["正常", "�
         images (numpy.ndarray [int]): shape is (num_data, height, width, channels)
         labels (list [str]): list of normal or anomaly
     """
+    # pdb.set_trace()
     if np.amax(images) > 1:
         ims = images.astype(np.int32)
-    n_plots = min(len(images), nrows * ncols)
+    else:
+        ims = images
+    n_plots = min(len(ims), nrows * ncols)
     fig, axs = plt.subplots(nrows, ncols)
     for i in range(n_plots):
         row = i // ncols
         col = i % ncols
+        pred = int(preds[i])
         if gts is None:
-            title = f"{names[preds[i]]}"
+            title = f"{names[pred]}"
         if gts is not None:
-            title = f"予測: {names[preds[i]]}/ 正解: {names[gts[i]]}"
+            gt = int(gts[i])
+            title = f"予測: {names[pred]}/ 正解: {names[gt]}"
         axs[row, col].set_title(title)
         axs[row, col].axis("off")
-        axs[row, col].imshow(images[i])
+        axs[row, col].imshow(ims[i])
     plt.suptitle("予測結果")
     plt.tight_layout()
     plt.show()
@@ -100,3 +106,18 @@ def show_history(history):
 
     plt.tight_layout()
     plt.show()
+
+
+class RT_Drawer():
+    def __init__(self, names=["正常", "異常"]):
+        self.fig = plt.figure()
+        self.names = names
+        plt.axis("off")
+
+    def update(self, image, label):
+        plt.title(self.names[label])
+        plt.imshow(image)
+        plt.pause(1)
+
+    def cleanup(self):
+        plt.close()

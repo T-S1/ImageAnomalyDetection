@@ -8,11 +8,12 @@ from src.visualize_data import show_image, show_images, show_similarities, show_
 
 
 def read_rgb_image(image_path):
-    image = cv2.imshow(image_path)
-    return cv2.cvtColor(template_image, cv2.COLOR_BGR2RGB)
+    image = cv2.imread(image_path)
+    im_cvt = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    return im_cvt
 
 
-template_image = read_rgb_image("./outsource/train/good/o001.jpg")
+template_image = read_rgb_image("outsource/Hazelnut/train/good/o001.jpg")
 show_image(template_image)
 
 height = template_image.shape[0]
@@ -36,4 +37,5 @@ for i in range(n_data):
 
     images[i, :, :, :] = image
 
-show_results(image, labels)
+print(images[0])
+show_results(images, labels)
