@@ -1,73 +1,46 @@
-"""前準備"""
-# import pdb
-import time
-import glob
-import cv2
-import numpy as np
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
-from sklearn.model_selection import train_test_split
+"""------------------------------使用するライブラリ-----------------------------"""
+import os                   # ファイル存在の有無の確認のため
+import glob                 # フォルダ内ファイルのパスを取得するため
+import tqdm                 # for文の進捗状況表示のため
+import cv2                  # 画像読み込み画像処理ライブラリ
+import numpy as np          # 数値計算ライブラリ
+import tensorflow as tf     # 機械学習用ライブラリ
+from tensorflow import keras                            # モデル構築に使用
+from tensorflow.keras import layers                     # モデル構築に使用
+from tensorflow.keras.utils import plot_model           # モデル構造の可視化に使用
+from sklearn.model_selection import train_test_split    # 訓練・テストデータの分割に使用
 
-from src.visualize_data import show_images, show_history, show_results
+from src.visualize_data import show_images, show_history, show_results  # 自作のグラフ表示モジュール
 
 SEED = 22
-tf.random.set_seed(SEED)
+tf.random.set_seed(SEED)    # 乱数のシード値を固定
 
-# train_normal_paths = glob.glob("outsource/Hazelnut/train/good/*.jpg")     # フォルダ内のパス取得
-# train_anomaly_paths = glob.glob("outsource/Hazelnut/train/crack/*.jpg")
-# test_normal_paths = glob.glob("outsource/Hazelnut/test/good/*.jpg")
-# test_anomaly_paths = glob.glob("outsource/Hazelnut/test/crack/*.jpg")
-# train_paths = train_normal_paths + train_anomaly_paths
-# test_paths = test_normal_paths + test_anomaly_paths
-# n_train = len(train_paths)
-# n_test = len(test_paths)
-# print(f"訓練用データ数: {n_train}")
-# print(f"テスト用データ数: {n_test}")
+normal_paths = glob.glob("data/normal/*.jpg")       # 正常データのパス
+anomaly_paths = glob.glob("data/anomaly/*.jpg")     # 異常データのパス
+image_paths = normal_paths + anomaly_paths          # 全データのパス
+n_data = len(image_paths)                           # データ数
 
-normal_paths = glob.glob("outsource/Hazelnut/train/good/*.jpg")
-anomaly_paths = glob.glob("outsource/Hazelnut/train/crack/*.jpg")
-image_paths = normal_paths + anomaly_paths
-n_data = len(image_paths)
-
-# train_labels = np.zeros(n_train, dtype=np.int32)
-# test_labels = np.zeros(n_test, dtype=np.int32)
-# train_labels[len(train_normal_paths):] = 1
-# test_labels[len(test_normal_paths):] = 1
-
-labels = np.zeros(n_data, dtype=np.int32)
+labels = np.zeros(n_data, dtype=np.int64)   
 labels[len(normal_paths):] = 1
 
 # 画像リサイズの画素数設定
 h_resize = 64                                   # リサイズ後の高さ(ピクセル数)
-im = cv2.imread(image_paths[0])                 # データ読み込み
-height = im.shape[0]                            # 元画像の高さ
-width = im.shape[1]                             # 元画像の幅
+image = cv2.imread(image_paths[0])              # データ読み込み
+height = image.shape[0]                         # 元画像の高さ
+width = image.shape[1]                          # 元画像の幅
 w_resize = round(width * h_resize / height)     # リサイズ後の幅(ピクセル数)
 
-
 """正常データの読み込み&前処理"""
-# def preprocess(im):
-#     im_cvt = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)        # RGBの順に変更
-#     im_res = cv2.resize(im_cvt, (w_resize, h_resize))   # 画素数の変更
-#     return im_res / 255                                 # 正規化
-
-# train_ims = np.zeros((n_train, h_resize, w_resize, 3), dtype=np.float32)
-# for i in range(n_train):
-#     im = cv2.imread(train_paths[i])                     # BGRの順で格納
-#     train_ims[i, :, :, :] = preprocess(im)
-
-# test_ims = np.zeros((n_test, h_resize, w_resize, 3), dtype=np.float32)
-# for i in range(n_test):
-#     im = cv2.imread(test_paths[i])
-#     test_ims[i, :, :, :] = preprocess(im)
-
-images = np.zeros((n_data, h_resize, w_resize, 3), dtype=np.float32)
-for i in range(n_data):
-    image = cv2.imread(image_paths[i])
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)         # RGBの順に変更
-    image = cv2.resize(image, (w_resize, h_resize))     # 画素数の変更
-    images[i, :, :, :] = image / 255                    # 0-1にスケーリング
+if not os.path.isfile("dataset.npy"):   # 処理後データが存在しない場合
+    images = np.zeros((n_data, h_resize, w_resize, 3), dtype=np.float32)    # 画像を格納
+    for i in tqdm.tqdm(range(n_data)):                      # tqdmで進捗状況確認
+        image = cv2.imread(image_paths[i])                  # BGRの順で読み込み
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)      # RGBの順に変更
+        image = cv2.resize(image, (w_resize, h_resize))     # 画素数の変更
+        images[i, :, :, :] = image / 255                    # 0-1にスケーリング
+    np.save("dataset.npy", images)      # 読み込み時間短縮のため，処理後データを保存
+else:
+    images = np.load("dataset.npy")     # 処理後データの読み込み
 
 # show_images(train_ims[::4])
 show_images(images[::4])
@@ -90,27 +63,25 @@ x = layers.Dense(2)(x)
 outputs = layers.Activation("softmax")(x)
 
 model = keras.Model(inputs=inputs, outputs=outputs)
-print(model.summary())
-
+# print(model.summary())
+plot_model(model, show_shapes=True)
 model.compile(
     loss=tf.keras.losses.CategoricalCrossentropy(),
     optimizer=keras.optimizers.SGD(learning_rate=1e-3),
     metrics=["accuracy"],
 )
-
-
-
 history = model.fit(
-    x_train, y_train, batch_size=1, epochs=500, validation_data=(x_val, y_val)
+    x_train, y_train, batch_size=64, epochs=100, validation_data=(x_val, y_val)
 )
+
 show_history(history)
 
 _, val_acc = model.evaluate(x_val, y_val)
 print(f"バリデーション時の正解数: {round(len(x_val) * val_acc)} / {len(x_val)}")
 
 preds = model.predict(x_val)
-pred_labels = np.argmax(preds, axis=1).astype(np.int32)
+pred_labels = np.argmax(preds, axis=1).astype(np.int64)
 
 show_results(x_val, pred_labels)
 
-model.save("deep_learning_model.h5")
+model.save("model.h5")

@@ -5,8 +5,8 @@ import shutil
 import numpy as np
 
 
-N_NORMAL = 800
-N_ANOMALY = 200
+N_NORMAL = 700
+N_ANOMALY = 700
 
 
 def main():

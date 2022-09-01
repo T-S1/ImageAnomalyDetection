@@ -131,3 +131,5 @@ dmypy.json
 outsource/
 *.jpg
 *.h5
+*.npy
+*.png

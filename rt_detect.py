@@ -34,7 +34,7 @@ def preprocess(image):
     # im_proc = np.expand_dims(im_proc, 0)                    # モデルの入力形式に合わせる
     return im_proc
 
-model = keras.models.load_model("deep_learning_model.h5")
+model = keras.models.load_model("model.h5")
 
 drawer = RT_Drawer()
 images = np.zeros((n_data, h_resize, w_resize, 3))

@@ -22,7 +22,7 @@ def show_image(image):
     plt.show()
 
 
-def show_images(images, nrows=3, ncols=4):
+def show_images(images, nrows=4, ncols=5):
     """show images in a figure
     Args:
         images (numpy.ndarray): shape is (num_data, height, width, channels)
@@ -57,7 +57,7 @@ def show_similarities(sims, threshold=None):
     plt.show()
 
 
-def show_results(images, preds, gts=None, nrows=4, ncols=5, names=["正常", "異常"]):
+def show_results(images, preds, values=None, nrows=4, ncols=5, names=["正常", "異常"], value_name="評価値"):
     """show images in a figure
     Args:
         images (numpy.ndarray [int]): shape is (num_data, height, width, channels)
@@ -74,15 +74,10 @@ def show_results(images, preds, gts=None, nrows=4, ncols=5, names=["正常", "�
         row = i // ncols
         col = i % ncols
         pred = int(preds[i])
-        if gts is None:
-            title = f"{names[pred]}"
-        if gts is not None:
-            gt = int(gts[i])
-            title = f"予測: {names[pred]}/ 正解: {names[gt]}"
+        title = f"予測: {names[pred]}, {value_name}: {values[i]:.4f}"
         axs[row, col].set_title(title)
         axs[row, col].axis("off")
         axs[row, col].imshow(ims[i])
-    plt.suptitle("予測結果")
     plt.tight_layout()
     plt.show()
 
@@ -101,7 +96,7 @@ def show_history(history):
     ax2.plot(history.history["val_loss"])
     ax2.set_title("Model accuracy")
     ax2.set_xlabel("Epoch")
-    ax2.set_ylabel("Accuracy")
+    ax2.set_ylabel("Loss")
     ax2.legend(["Train", "Validation"], loc="upper left")
 
     plt.tight_layout()
