@@ -72,6 +72,11 @@ for i in range(n_data):
 # show_images(train_ims[::4])
 show_images(images[::4])
 
+y = tf.one_hot(labels, 2).numpy()
+x_train, x_val, y_train, y_val = train_test_split(
+    images, y, test_size=0.2, random_state=SEED, stratify=labels
+)
+
 """深層学習モデルの構築"""
 inputs = keras.Input(shape=(h_resize, w_resize, 3))
 x = layers.Conv2D(32, 3)(inputs)
@@ -89,17 +94,14 @@ print(model.summary())
 
 model.compile(
     loss=tf.keras.losses.CategoricalCrossentropy(),
-    optimizer=keras.optimizers.Adam(learning_rate=1e-3),
+    optimizer=keras.optimizers.SGD(learning_rate=1e-3),
     metrics=["accuracy"],
 )
 
-y = tf.one_hot(labels, 2).numpy()
-x_train, x_val, y_train, y_val = train_test_split(
-    images, y, test_size=0.2, random_state=SEED, stratify=labels
-)
+
 
 history = model.fit(
-    x_train, y_train, batch_size=1, epochs=2, validation_data=(x_val, y_val)
+    x_train, y_train, batch_size=1, epochs=500, validation_data=(x_val, y_val)
 )
 show_history(history)
 
