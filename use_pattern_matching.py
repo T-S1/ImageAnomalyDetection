@@ -38,5 +38,8 @@ for i in range(n_data):
     dif_images[i, :, :, :] = dif_image
     mean_sad_arr[i] = mean_sad
 
+print("Graph plotting...")
 show_results(images, labels, values=mean_sad_arr, value_name="SAD")     # 判定結果の表示
+print("Graph plotting...")
 show_images(dif_images)                                                 # 差分画像の表示
+print("Done")

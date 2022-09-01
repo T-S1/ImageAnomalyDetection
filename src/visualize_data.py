@@ -1,4 +1,3 @@
-import pdb
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -57,15 +56,14 @@ def show_similarities(sims, threshold=None):
     plt.show()
 
 
-def show_results(images, preds, values=None, nrows=4, ncols=5, names=["正常", "異常"], value_name="評価値"):
+def show_results(images, labels, values=None, nrows=4, ncols=5, names=["正常", "異常"], value_name="評価値"):
     """show images in a figure
     Args:
         images (numpy.ndarray [int]): shape is (num_data, height, width, channels)
         labels (list [str]): list of normal or anomaly
     """
-    # pdb.set_trace()
     if np.amax(images) > 1:
-        ims = images.astype(np.int32)
+        ims = images.astype(np.int64)
     else:
         ims = images
     n_plots = min(len(ims), nrows * ncols)
@@ -73,8 +71,10 @@ def show_results(images, preds, values=None, nrows=4, ncols=5, names=["正常", 
     for i in range(n_plots):
         row = i // ncols
         col = i % ncols
-        pred = int(preds[i])
-        title = f"予測: {names[pred]}, {value_name}: {values[i]:.4f}"
+        pred = int(labels[i])
+        title = f"予測: {names[pred]}"
+        if values is not None:
+            title += f", {value_name}: {values[i]:.4f}"
         axs[row, col].set_title(title)
         axs[row, col].axis("off")
         axs[row, col].imshow(ims[i])
