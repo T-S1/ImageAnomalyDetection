@@ -6,7 +6,8 @@ import numpy as np
 
 
 N_NORMAL = 700
-N_ANOMALY = 700
+N_ANOMALY = 300
+dataset_dir = "./init_data/forDeepLearning"
 
 
 def main():
@@ -23,10 +24,10 @@ def main():
     )
     args = parser.parse_args()
 
-    if not os.path.isdir("./data/normal"):
-        os.makedirs("./data/normal")
-    if not os.path.isdir("./data/anomaly"):
-        os.makedirs("./data/anomaly")
+    if not os.path.isdir(f"{dataset_dir}/normal"):
+        os.makedirs(f"{dataset_dir}/normal")
+    if not os.path.isdir(f"{dataset_dir}/anomaly"):
+        os.makedirs(f"{dataset_dir}/anomaly")
 
     normal_paths = glob.glob(args.normal_dir + "/**/*.JPG", recursive=True)
     anomaly_paths = glob.glob(args.anomaly_dir + "/**/*.JPG", recursive=True)
@@ -41,10 +42,10 @@ def main():
     picked_anom_paths = [anomaly_paths[idx] for idx in anomaly_idxs]
 
     for i in range(len(picked_norm_paths)):
-        shutil.copy(picked_norm_paths[i], f"./data/normal/{i:05}.JPG")
+        shutil.copy(picked_norm_paths[i], f"{dataset_dir}/normal/{i:05}.jpg")
 
     for i in range(len(picked_anom_paths)):
-        shutil.copy(picked_anom_paths[i], f"./data/anomaly/{i:05}.JPG")
+        shutil.copy(picked_anom_paths[i], f"{dataset_dir}/anomaly/{i:05}.jpg")
 
 
 if __name__ == "__main__":
