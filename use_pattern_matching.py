@@ -9,17 +9,17 @@ def read_rgb_image(image_path):
     """画像をRGBの順で読み込む関数"""
     image = cv2.imread(image_path)                      # BGRの順でJPGファイルの読み込み
     im_cvt = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)     # RGBの順に変換
-    return im_cvt
+    return im_cvt.astype(np.float64)                    # 計算のため浮動小数にする
 
 
-template_image = read_rgb_image("./data/template.JPG")
+template_image = read_rgb_image("./data/forPatternMatching/template.jpg")
 height = template_image.shape[0]    # 画像の高さ[ピクセル]
 width = template_image.shape[1]     # 画像の幅[ピクセル]
 show_image(template_image)          # テンプレート画像の表示
 
-threshold = 1   # 異常検知の閾値
+threshold = 100   # 異常検知の閾値
 
-image_paths = glob.glob("data/for_pattern_matching/*.jpg")  # テスト用画像ファイルのパス取得
+image_paths = glob.glob("data/forPatternMatching/test/*.jpg")  # テスト用画像ファイルのパス取得
 n_data = len(image_paths)                           # データ数
 images = np.zeros((n_data, height, width, 3))       # 画像を格納
 dif_images = np.zeros((n_data, height, width, 3))   # 差分画像を格納
@@ -38,8 +38,5 @@ for i in range(n_data):
     dif_images[i, :, :, :] = dif_image
     mean_sad_arr[i] = mean_sad
 
-print("Graph plotting...")
-show_results(images, labels, values=mean_sad_arr, value_name="SAD")     # 判定結果の表示
-print("Graph plotting...")
+show_results(images, labels, values=mean_sad_arr, value_name="SAD平均")     # 判定結果の表示
 show_images(dif_images)                                                 # 差分画像の表示
-print("Done")
