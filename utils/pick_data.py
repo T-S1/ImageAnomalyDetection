@@ -6,7 +6,7 @@ import numpy as np
 
 
 N_NORMAL = 700
-N_ANOMALY = 300
+N_ANOMALY = 500
 dataset_dir = "./init_data/forDeepLearning"
 
 
