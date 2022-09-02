@@ -17,26 +17,26 @@ height = template_image.shape[0]    # 画像の高さ[ピクセル]
 width = template_image.shape[1]     # 画像の幅[ピクセル]
 show_image(template_image)          # テンプレート画像の表示
 
-threshold = 100   # 異常検知の閾値
+threshold = 30   # 異常検知の閾値
 
-image_paths = glob.glob("data/forPatternMatching/test/*.jpg")  # テスト用画像ファイルのパス取得
+image_paths = glob.glob("./data/forPatternMatching/test/*.jpg")     # テスト用画像ファイルのパス取得
 n_data = len(image_paths)                           # データ数
 images = np.zeros((n_data, height, width, 3))       # 画像を格納
 dif_images = np.zeros((n_data, height, width, 3))   # 差分画像を格納
-labels = np.zeros(n_data, np.int64) - 1             # 異常検知の結果を格納
-mean_sad_arr = np.zeros(n_data)                     # SADの画素平均を格納
+labels = np.zeros(n_data, np.int64) - 1     # 異常検知の結果を格納
+mad_arr = np.zeros(n_data)                  # MADを格納
 
 for i in range(n_data):
     image = read_rgb_image(image_paths[i])
-    dif_image = np.abs(image - template_image)      # 画像差分算出
-    sad = np.sum(dif_image)                         # SADの算出
-    mean_sad = sad / (height * width)               # 画素数で割り平均を算出
+    dif_image = np.abs(image - template_image)  # 画像差分算出
+    sad = np.sum(dif_image)                     # SADの算出
+    mad = sad / (height * width)                # 画素数で割りMADを算出
 
-    labels[i] = 0 if mean_sad < threshold else 1    # 正常なら0, 異常なら1
+    labels[i] = 0 if mad < threshold else 1     # 正常なら0, 異常なら1
 
     images[i, :, :, :] = image
     dif_images[i, :, :, :] = dif_image
-    mean_sad_arr[i] = mean_sad
+    mad_arr[i] = mad
 
-show_results(images, labels, values=mean_sad_arr, value_name="SAD平均")     # 判定結果の表示
-show_images(dif_images)                                                 # 差分画像の表示
+show_results(images, labels, nrows=2, ncols=3, values=mad_arr, value_name="MAD")    # 判定結果の表示
+show_images(dif_images, nrows=2, ncols=3)                                           # 差分画像の表示
