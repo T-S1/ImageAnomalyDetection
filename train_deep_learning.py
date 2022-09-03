@@ -9,7 +9,7 @@ from tensorflow.keras import layers                     # モデル構築に使�
 from tensorflow.keras.utils import plot_model           # モデル構造の可視化に使用
 from sklearn.model_selection import train_test_split    # 訓練・テストデータの分割に使用
 
-from src.visualize_data import show_images, show_history, show_results  # 自作のグラフ表示モジュール
+from src.visualize_data import show_images, show_history, show_results   # 自作のグラフ表示モジュール
 
 """------------------------------データの読み込み&前処理-----------------------------"""
 normal_paths = glob.glob("./data/forDeepLearning/normal/*.jpg")     # 正常データのパス
@@ -33,7 +33,7 @@ for i in tqdm.tqdm(range(n_data)):                      # tqdmで進捗状況確
     im_proc = cv2.cvtColor(im_proc, cv2.COLOR_BGR2RGB)  # RGBの順に変更
     images[i, :, :, :] = im_proc / 255                  # 正規化
 
-# show_images(images[::4])    # 処理後データの確認
+show_images(images[::100])    # 処理後データの確認
 
 """-----------------------------出力（教師）データの生成----------------------------"""
 labels = np.zeros(n_data, dtype=np.int64)   # 教師ラベルを格納
@@ -45,71 +45,77 @@ SEED = 22   # 乱数のシード値
 
 x_trainval, x_test, y_trainval, y_test = train_test_split(
     images, y, test_size=200, random_state=SEED, stratify=y
-)   # データセットを訓練・バリデーション用とテスト用に分割
+)   # データセットを訓練・検証用とテスト用に分割
 x_train, x_val, y_train, y_val = train_test_split(
     x_trainval, y_trainval, test_size=200, random_state=SEED, stratify=y_trainval
-)   # データセットを訓練用とバリデーション用に分割
+)   # データセットを訓練用と検証用に分割
+
 print("訓練用データ数:", len(x_train))
-print("バリデーション用データ数:", len(x_val))
+print("検証用データ数:", len(x_val))
 print("テスト用データ数:", len(x_test))
 
 tf.random.set_seed(SEED)    # tensorflowに係るシード値固定
 
 """----------↓モデルの定義(例)↓ 演習時はコメントアウト,範囲選択してCtrl + / (スラッシュ)---------"""
-inputs = keras.Input(shape=(h_resize, w_resize, 3))                                 # 入力層
-x = layers.Conv2D(filters=32, kernel_size=3, strides=1, padding="same")(inputs)     # 畳み込み層
-x = layers.Activation("relu")(x)                                                    # 活性化関数(ReLU)
-x = layers.MaxPool2D(pool_size=2, strides=2, padding="valid")(x)                    # マックスプーリング層
-x = layers.Flatten()(x)                                                             # 平坦化層
-x = layers.Dense(units=32)(x)                                                       # 全結合層
-x = layers.Activation("sigmoid")(x)                                                 # 活性化関数(シグモイド)
-x = layers.Dense(units=2)(x)                                                        # 全結合層(出力)
-outputs = layers.Activation("softmax")(x)                                           # 活性化関数(ソフトマックス)
-model = keras.Model(inputs=inputs, outputs=outputs)     # モデル入出力の定義
+# inputs = keras.Input(shape=(h_resize, w_resize, 3))                                 # 入力層
+# x = layers.Conv2D(filters=32, kernel_size=3, strides=1, padding="same")(inputs)     # 畳み込み層
+# x = layers.Activation("relu")(x)                                                    # 活性化関数(ReLU)
+# x = layers.MaxPool2D(pool_size=2, strides=2, padding="valid")(x)                    # マックスプーリング層
+# x = layers.Flatten()(x)                                                             # 平坦化層
+# x = layers.Dense(units=32)(x)                                                       # 全結合層
+# x = layers.Activation("sigmoid")(x)                                                 # 活性化関数(シグモイド)
+# x = layers.Dense(units=2)(x)                                                        # 全結合層(出力)
+# outputs = layers.Activation("softmax")(x)                                           # 活性化関数(ソフトマックス)
+# model = keras.Model(inputs=inputs, outputs=outputs)     # モデル入出力の定義
 
-plot_model(model, show_shapes=True)     # モデル構造の図を保存(model.png)
+# plot_model(model, show_shapes=True)     # モデル構造の図を保存(model.png)
 
-model.compile(
-    loss=tf.keras.losses.CategoricalCrossentropy(),
-    optimizer=keras.optimizers.SGD(learning_rate=1e-3),
-    metrics=["accuracy"],
-)   # 最適化に関する設定
+# model.compile(
+#     loss=tf.keras.losses.CategoricalCrossentropy(),
+#     optimizer=keras.optimizers.SGD(learning_rate=1e-3),
+#     metrics=["accuracy"],
+# )   # 最適化に関する設定
 
-history = model.fit(
-    x_train, y_train, batch_size=64, epochs=10,
-    validation_data=(x_val, y_val)
-)   # 学習
-"""------------------------------↑モデルの定義(例)↑ 演習時はコメントアウト,範囲選択してCtrl + / (スラッシュ)-----------------------------"""
+# history = model.fit(
+#     x_train, y_train, batch_size=64, epochs=50,
+#     validation_data=(x_val, y_val)
+# )   # 学習
+"""----------↑モデルの定義(例)↑ 演習時はコメントアウト,範囲選択してCtrl + / (スラッシュ)---------"""
 
-"""------------------------------↓演習用↓ 使う時は範囲選択してCtrl + / (スラッシュ)-----------------------------"""
-# inputs = keras.Input(shape=(h_resize, w_resize, 3))
-# x = layers.Conv2D(32, 3)(inputs)
+"""-----------------↓演習用↓ 使う時は範囲選択してCtrl + / (スラッシュ)--------------------------"""
+# inputs = keras.Input(shape=(h_resize, w_resize, 3))   # 入力層
+
+# x = layers.Conv2D(filters=32, kernel_size=3, strides=1, padding="same")(inputs)
 # x = layers.Activation("relu")(x)
-# x = layers.Conv2D(32, 3)(x)
-# x = layers.Activation("relu")(x)
+# x = layers.MaxPool2D(pool_size=2, strides=2, padding="valid")(x)
 # x = layers.Flatten()(x)
-# x = layers.Dense(32)(x)
-# x = layers.Activation("relu")(x)
-# x = layers.Dense(2)(x)
-# outputs = layers.Activation("softmax")(x)
-# model = keras.Model(inputs=inputs, outputs=outputs)
+# x = layers.Dense(units=32)(x)
+# x = layers.Activation("sigmoid")(x)
+
+# x = layers.Dense(units=2)(x)                          # 全結合層（出力）
+# outputs = layers.Activation("softmax")(x)             # 活性化関数(ソフトマックス)
+# model = keras.Model(inputs=inputs, outputs=outputs)   # モデル入出力の定義
+
+# plot_model(model, show_shapes=True)     # モデル構造の図を保存(model.png)
 
 # model.compile(
 #     loss=tf.keras.losses.CategoricalCrossentropy(),
 #     optimizer=keras.optimizers.SGD(learning_rate=1e-3),
 #     metrics=["accuracy"],
 # )
-# history = model.fit(
-#     x_train, y_train, batch_size=64, epochs=100, validation_data=(x_test, y_test)
-# )
-"""------------------------------↑演習用↑ 使う時は範囲選択してCtrl + / (スラッシュ)-----------------------------"""
 
-plot_model(model, show_shapes=True)     # モデル構造の図を保存(model.png)
+# history = model.fit(
+#     x_train, y_train, batch_size=64, epochs=50,
+#     validation_data=(x_val, y_val)
+# )
+"""-----------------↑演習用↑ 使う時は範囲選択してCtrl + / (スラッシュ)--------------------------"""
+
+"""---------------------------------モデル性能のテスト-----------------------------------------"""
 show_history(history)                   # 学習中の正解率と損失の表示
 _, accuracy = model.evaluate(x_test, y_test)
-print("テスト正解率：", accuracy)
+print("テスト用データに対する正解率：", accuracy)
 
-"""------------------------------モデルの保存と読み込み-----------------------------"""
+"""-----------------------------------モデルの保存と読み込み----------------------------------"""
 model.save("model.h5")  # モデルの保存
 
 loaded_model = keras.models.load_model("model.h5")  # モデルの読み込み
