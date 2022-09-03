@@ -5,16 +5,16 @@ from tensorflow import keras
 
 from src.visualize_data import RT_Drawer, show_results
 
-image_paths = glob.glob("./data/forRealtimeDetection/*.JPG")
+image_paths = glob.glob("./data/forRealtimeDetection/*.jpg")
 n_data = len(image_paths)
 
-h_resize = 64                                   # リサイズ後の高さ(ピクセル数)
+h_resize = 128                                  # リサイズ後の高さ(ピクセル数)
 image = cv2.imread(image_paths[0])              # データ読み込み
 height = image.shape[0]                         # 元画像の高さ
 width = image.shape[1]                          # 元画像の幅
 w_resize = round(width * h_resize / height)     # リサイズ後の幅(ピクセル数)
 
-model = keras.models.load_model("model.h5")
+model = keras.models.load_model("model.h5")     # モデルの読み込み
 
 drawer = RT_Drawer()
 images = np.zeros((n_data, h_resize, w_resize, 3))
