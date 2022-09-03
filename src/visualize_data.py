@@ -16,7 +16,7 @@ def show_image(image):
     plt.show()
 
 
-def show_images(images, nrows=4, ncols=5):
+def show_images(images, nrows=3, ncols=4):
     if np.amax(images) > 1:
         ims = images.astype(np.int32)
     else:
@@ -41,7 +41,7 @@ def show_similarities(sims, threshold=None):
     plt.show()
 
 
-def show_results(images, labels, values=None, nrows=4, ncols=5, names=["正常", "異常"], value_name="評価値"):
+def show_results(images, labels, values=None, nrows=3, ncols=4, names=["正常", "異常"], value_name="評価値"):
     if np.amax(images) > 1:
         ims = images.astype(np.int64)
     else:
@@ -73,7 +73,7 @@ def show_history(history):
 
     ax2.plot(history.history["loss"])
     ax2.plot(history.history["val_loss"])
-    ax2.set_title("Model accuracy")
+    ax2.set_title("Model loss")
     ax2.set_xlabel("Epoch")
     ax2.set_ylabel("Loss")
     ax2.legend(["Train", "Validation"], loc="upper right")
@@ -91,7 +91,7 @@ class RT_Drawer():
     def update(self, image, label):
         plt.title(self.names[label])
         plt.imshow(image)
-        plt.pause(1)
+        plt.pause(5)
 
     def cleanup(self):
         plt.close()
