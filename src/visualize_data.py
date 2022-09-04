@@ -62,18 +62,21 @@ def show_results(images, labels, values=None, nrows=3, ncols=4, names=["正常",
 
 
 def show_history(history):
+    keys = list(history.history.keys())
+    metrics_key = keys[1]
+    val_idx = len(keys) // 2 + 1
+    val_metrics_key = keys[val_idx]
+
     fig, (ax1, ax2) = plt.subplots(1, 2)
 
-    ax1.plot(history.history["accuracy"])
-    ax1.plot(history.history["val_accuracy"])
-    ax1.set_title("Model accuracy")
+    ax1.plot(history.history[metrics_key])
+    ax1.plot(history.history[val_metrics_key])
     ax1.set_xlabel("Epoch")
-    ax1.set_ylabel("Accuracy")
+    ax1.set_ylabel(metrics_key)
     ax1.legend(["Train", "Validation"], loc="lower right")
 
     ax2.plot(history.history["loss"])
     ax2.plot(history.history["val_loss"])
-    ax2.set_title("Model loss")
     ax2.set_xlabel("Epoch")
     ax2.set_ylabel("Loss")
     ax2.legend(["Train", "Validation"], loc="upper right")
