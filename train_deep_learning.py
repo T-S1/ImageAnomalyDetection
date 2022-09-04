@@ -57,29 +57,29 @@ print("テスト用データ数:", len(x_test))
 tf.random.set_seed(SEED)    # tensorflowに係るシード値固定
 
 """----------↓モデルの定義(例)↓ 演習時はコメントアウト,範囲選択してCtrl + / (スラッシュ)---------"""
-# inputs = keras.Input(shape=(h_resize, w_resize, 3))                                 # 入力層
-# x = layers.Conv2D(filters=32, kernel_size=3, strides=1, padding="same")(inputs)     # 畳み込み層
-# x = layers.Activation("relu")(x)                                                    # 活性化関数(ReLU)
-# x = layers.MaxPool2D(pool_size=2, strides=2, padding="valid")(x)                    # マックスプーリング層
-# x = layers.Flatten()(x)                                                             # 平坦化層
-# x = layers.Dense(units=32)(x)                                                       # 全結合層
-# x = layers.Activation("sigmoid")(x)                                                 # 活性化関数(シグモイド)
-# x = layers.Dense(units=2)(x)                                                        # 全結合層(出力)
-# outputs = layers.Activation("softmax")(x)                                           # 活性化関数(ソフトマックス)
-# model = keras.Model(inputs=inputs, outputs=outputs)     # モデル入出力の定義
+inputs = keras.Input(shape=(h_resize, w_resize, 3))                                 # 入力層
+x = layers.Conv2D(filters=32, kernel_size=3, strides=1, padding="same")(inputs)     # 畳み込み層
+x = layers.Activation("relu")(x)                                                    # 活性化関数(ReLU)
+x = layers.MaxPool2D(pool_size=2, strides=2, padding="valid")(x)                    # マックスプーリング層
+x = layers.Flatten()(x)                                                             # 平坦化層
+x = layers.Dense(units=32)(x)                                                       # 全結合層
+x = layers.Activation("sigmoid")(x)                                                 # 活性化関数(シグモイド)
+x = layers.Dense(units=2)(x)                                                        # 全結合層(出力)
+outputs = layers.Activation("softmax")(x)                                           # 活性化関数(ソフトマックス)
+model = keras.Model(inputs=inputs, outputs=outputs)     # モデル入出力の定義
 
-# plot_model(model, show_shapes=True)     # モデル構造の図を保存(model.png)
+plot_model(model, show_shapes=True)     # モデル構造の図を保存(model.png)
 
-# model.compile(
-#     loss=tf.keras.losses.CategoricalCrossentropy(),
-#     optimizer=keras.optimizers.SGD(learning_rate=1e-3),
-#     metrics=["accuracy"],
-# )   # 最適化に関する設定
+model.compile(
+    loss=keras.losses.CategoricalCrossentropy(),
+    optimizer=keras.optimizers.SGD(learning_rate=1e-3),
+    metrics=["Accuracy"],
+)   # 最適化に関する設定
 
-# history = model.fit(
-#     x_train, y_train, batch_size=64, epochs=50,
-#     validation_data=(x_val, y_val)
-# )   # 学習
+history = model.fit(
+    x_train, y_train, batch_size=64, epochs=50,
+    validation_data=(x_val, y_val)
+)   # 学習
 """----------↑モデルの定義(例)↑ 演習時はコメントアウト,範囲選択してCtrl + / (スラッシュ)---------"""
 
 """-----------------↓演習用↓ 使う時は範囲選択してCtrl + / (スラッシュ)--------------------------"""
@@ -101,7 +101,7 @@ tf.random.set_seed(SEED)    # tensorflowに係るシード値固定
 # model.compile(
 #     loss=tf.keras.losses.CategoricalCrossentropy(),
 #     optimizer=keras.optimizers.SGD(learning_rate=1e-3),
-#     metrics=["accuracy"],
+#     metrics=["Accuracy"],
 # )
 
 # history = model.fit(
