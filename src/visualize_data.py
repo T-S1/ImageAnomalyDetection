@@ -61,13 +61,13 @@ def show_results(images, labels, values=None, nrows=3, ncols=4, names=["正常",
     plt.show()
 
 
-def show_history(history):
+def show_history(history, save_path=None):
     keys = list(history.history.keys())
     metrics_key = keys[1]
     val_idx = len(keys) // 2 + 1
     val_metrics_key = keys[val_idx]
 
-    fig, (ax1, ax2) = plt.subplots(1, 2)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9.6, 4.8))
 
     ax1.plot(history.history[metrics_key])
     ax1.plot(history.history[val_metrics_key])
@@ -82,19 +82,33 @@ def show_history(history):
     ax2.legend(["Train", "Validation"], loc="upper right")
 
     plt.tight_layout()
+    if save_path is not None:
+        plt.savefig(save_path)
     plt.show()
 
 
 class RT_Drawer():
-    def __init__(self, names=["正常", "異常"]):
-        self.fig = plt.figure()
+    def __init__(self, names=["正常", "異常"], colors=["g", "r"]):
+        self.fig, (self.ax1, self.ax2) = plt.subplots(1, 2, figsize=(9.6, 4.8))
         self.names = names
-        plt.axis("off")
+        self.colors = colors
 
     def update(self, image, label):
-        plt.title(self.names[label])
-        plt.imshow(image)
-        plt.pause(5)
+        self.ax1.imshow(image)
+        self.ax1.set_title("取得画像")
+        self.ax1.axis("off")
+
+        self.ax2.text(
+            0.5, 0.5, self.names[label], fontsize=30, color=self.colors[label],
+            horizontalalignment="center", verticalalignment="center"
+        )
+        self.ax2.set_title("予測結果")
+        self.ax2.axis("off")
+        self.ax2.set_facecolor(self.colors[label])
+
+        plt.pause(3)
+        self.ax1.cla()
+        self.ax2.cla()
 
     def cleanup(self):
         plt.close()
