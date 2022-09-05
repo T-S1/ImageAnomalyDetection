@@ -17,12 +17,12 @@ height = template_image.shape[0]    # 画像の高さ[ピクセル]
 width = template_image.shape[1]     # 画像の幅[ピクセル]
 show_image(template_image)          # テンプレート画像の表示
 
-threshold = 30   # 異常検知の閾値
+threshold = 15   # 異常検知の閾値
 
 image_paths = glob.glob("./data/forPatternMatching/test/*.jpg")     # テスト用画像ファイルのパス取得
-n_data = len(image_paths)                           # データ数
-images = np.zeros((n_data, height, width, 3))       # 画像を格納
-dif_images = np.zeros((n_data, height, width, 3))   # 差分画像を格納
+n_data = len(image_paths)                               # データ数
+images = np.zeros((n_data, height, width, 3))         # 画像を格納
+dif_images = np.zeros((n_data, height, width, 3))     # 差分画像を格納
 labels = np.zeros(n_data, np.int64) - 1     # 異常検知の結果を格納
 mad_arr = np.zeros(n_data)                  # MADを格納
 
@@ -35,7 +35,7 @@ for i in range(n_data):
     labels[i] = 0 if mad < threshold else 1     # 正常なら0, 異常なら1
 
     images[i, :, :, :] = image
-    dif_images[i, :, :, :] = dif_image
+    dif_images[i, :, :, :] = 255 - dif_image    # 見やすさのため白黒を反転
     mad_arr[i] = mad
 
 show_results(images, labels, nrows=2, ncols=3, values=mad_arr, value_name="MAD")    # 判定結果の表示
