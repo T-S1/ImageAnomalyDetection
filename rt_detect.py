@@ -22,8 +22,8 @@ labels = np.zeros(n_data, dtype=np.int32) - 1
 
 for i in range(n_data):
     image = cv2.imread(image_paths[i])      # リアルタイムに取得した画像を想定
-    im_proc = cv2.resize(image, (w_resize, h_resize))     # 画素数の変更
-    im_proc = cv2.cvtColor(im_proc, cv2.COLOR_BGR2RGB)        # RGBの順に変更
+    im_proc = cv2.resize(image, (w_resize, h_resize))       # 画素数の変更
+    im_proc = cv2.cvtColor(im_proc, cv2.COLOR_BGR2RGB)      # RGBの順に変更
     im_proc = im_proc / 255                                 # 正規化
     x = np.expand_dims(im_proc, axis=0)     # モデルの入力形式に合わせる
     y = model.predict(x)                    # 予測
