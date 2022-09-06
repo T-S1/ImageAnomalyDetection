@@ -1,4 +1,5 @@
 # cd C:\WorkSpace\Practice2
+# Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 echo "1 ----------------------------------------------------------------------"
 python -m venv env
 echo "2 ----------------------------------------------------------------------"
